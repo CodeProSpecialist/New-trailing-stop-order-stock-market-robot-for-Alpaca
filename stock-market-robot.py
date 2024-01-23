@@ -63,8 +63,12 @@ def buy_stock_with_trailing_stop(symbol):
         print(f"Error: {str(e)}")
 
 def is_market_open():
-    current_time = datetime.now().astimezone(timezone('US/Eastern'))
-    return current_time.weekday() < 5 and (current_time.hour == 9 and current_time.minute >= 27) or (9 < current_time.hour < 16)
+    eastern_timezone = timezone('US/Eastern')
+    current_time = datetime.now(eastern_timezone)
+    market_open_time = datetime(current_time.year, current_time.month, current_time.day, 9, 30, 0, 0, eastern_timezone)
+    market_close_time = datetime(current_time.year, current_time.month, current_time.day, 16, 0, 0, 0, eastern_timezone)
+    
+    return current_time.weekday() < 5 and market_open_time <= current_time <= market_close_time
 
 # Execute the trading logic in a loop every 30 seconds
 while True:
