@@ -76,10 +76,10 @@ def get_next_market_open_time():
     
     if current_time.weekday() == 4 and current_time.hour >= 16:
         # If today is Friday and after market close, add days until Monday
-        next_market_open_time = current_time + timedelta(days=(7 - current_time.weekday()) % 7) + timedelta(hours=(9 - current_time.hour))
+        next_market_open_time = datetime(current_time.year, current_time.month, current_time.day, 9, 30, 0, 0, eastern_timezone) + timedelta(days=(7 - current_time.weekday()) % 7)
     else:
         # Add days until the next market open
-        next_market_open_time = current_time + timedelta(days=(7 - current_time.weekday()) % 7) + timedelta(hours=(9 - current_time.hour))
+        next_market_open_time = datetime(current_time.year, current_time.month, current_time.day, 9, 30, 0, 0, eastern_timezone) + timedelta(days=(7 - current_time.weekday()) % 7)
     
     return next_market_open_time
 
@@ -95,6 +95,6 @@ while True:
         next_market_open_time = get_next_market_open_time()
         print(f"Market is closed. Next market open time: {next_market_open_time.strftime('%B %d, %Y %I:%M:%S %p')}")
 
-    next_run_time = datetime.now(eastern_timezone) + timedelta(seconds=30)
+    next_run_time = datetime.now(timezone('US/Eastern')) + timedelta(seconds=30)
     print(f"Next run at {next_run_time.strftime('%B %d, %Y %I:%M:%S %p')}")
     time.sleep(30)  # Wait for 30 seconds before repeating the program
