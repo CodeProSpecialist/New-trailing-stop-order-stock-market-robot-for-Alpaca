@@ -2,8 +2,8 @@ import os
 import alpaca_trade_api as tradeapi
 import yfinance as yf
 import time
-from pytz import timezone 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone, timedelta
+from pytz import timezone
 
 # Load environment variables for Alpaca API
 APIKEYID = os.getenv('APCA_API_KEY_ID')
@@ -75,10 +75,10 @@ while True:
     if is_market_open():
         for symbol in stock_symbols:
             current_price = get_current_price(symbol)
-            timestamp = datetime.now().astimezone(timezone('US/Eastern')).strftime('%B %d, %Y %I:%M:%S %p')
+            timestamp = datetime.now(eastern_timezone).strftime('%B %d, %Y %I:%M:%S %p')
             print(f"Current price of {symbol}: ${current_price:.4f}, Timestamp: {timestamp}")
             buy_stock_with_trailing_stop(symbol)
 
-    next_run_time = datetime.now().astimezone(timezone('US/Eastern')) + timedelta(seconds=30)
+    next_run_time = datetime.now(eastern_timezone) + timedelta(seconds=30)
     print(f"Next run at {next_run_time.strftime('%B %d, %Y %I:%M:%S %p')}")
     time.sleep(30)  # Wait for 30 seconds before repeating the program
