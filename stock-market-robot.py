@@ -2,6 +2,7 @@ import os
 import alpaca_trade_api as tradeapi
 import yfinance as yf
 import time
+from pytz import timezone 
 from datetime import datetime, timedelta, timezone
 
 # Load environment variables for Alpaca API
