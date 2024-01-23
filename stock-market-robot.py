@@ -70,6 +70,19 @@ def is_market_open():
     
     return current_time.weekday() < 5 and market_open_time <= current_time <= market_close_time
 
+def get_next_market_open_time():
+    eastern_timezone = timezone('US/Eastern')
+    current_time = datetime.now(eastern_timezone)
+    
+    if current_time.weekday() == 4 and current_time.hour >= 16:
+        # If today is Friday and after market close, add days until Monday
+        next_market_open_time = current_time + timedelta(days=(7 - current_time.weekday()) % 7) + timedelta(hours=(9 - current_time.hour))
+    else:
+        # Add days until the next market open
+        next_market_open_time = current_time + timedelta(days=(7 - current_time.weekday()) % 7) + timedelta(hours=(9 - current_time.hour))
+    
+    return next_market_open_time
+
 # Execute the trading logic in a loop every 30 seconds
 while True:
     if is_market_open():
@@ -78,9 +91,10 @@ while True:
             timestamp = datetime.now(eastern_timezone).strftime('%B %d, %Y %I:%M:%S %p')
             print(f"Current price of {symbol}: ${current_price:.4f}, Timestamp: {timestamp}")
             buy_stock_with_trailing_stop(symbol)
+    else:
+        next_market_open_time = get_next_market_open_time()
+        print(f"Market is closed. Next market open time: {next_market_open_time.strftime('%B %d, %Y %I:%M:%S %p')}")
 
-    # Define eastern_timezone here to fix the NameError
-    eastern_timezone = timezone('US/Eastern')
     next_run_time = datetime.now(eastern_timezone) + timedelta(seconds=30)
     print(f"Next run at {next_run_time.strftime('%B %d, %Y %I:%M:%S %p')}")
     time.sleep(30)  # Wait for 30 seconds before repeating the program
