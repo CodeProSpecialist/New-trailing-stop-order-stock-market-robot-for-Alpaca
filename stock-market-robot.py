@@ -79,7 +79,8 @@ while True:
             print(f"Current price of {symbol}: ${current_price:.4f}, Timestamp: {timestamp}")
             buy_stock_with_trailing_stop(symbol)
 
+    # Define eastern_timezone here to fix the NameError
+    eastern_timezone = timezone('US/Eastern')
     next_run_time = datetime.now(eastern_timezone) + timedelta(seconds=30)
     print(f"Next run at {next_run_time.strftime('%B %d, %Y %I:%M:%S %p')}")
     time.sleep(30)  # Wait for 30 seconds before repeating the program
-
