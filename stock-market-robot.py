@@ -68,7 +68,8 @@ def buy_stock_with_trailing_stop(symbol):
 def is_market_open():
     eastern_timezone = timezone('US/Eastern')
     current_time = datetime.now(eastern_timezone)
-    market_open_time = datetime(current_time.year, current_time.month, current_time.day, 9, 30, 0, 0, eastern_timezone)
+    # buying after 10:02am Eastern Time because of the daily market price reversals near 10:00am - 10:15am Eastern time
+    market_open_time = datetime(current_time.year, current_time.month, current_time.day, 10, 2, 0, 0, eastern_timezone)
     market_close_time = datetime(current_time.year, current_time.month, current_time.day, 16, 0, 0, 0, eastern_timezone)
 
     return current_time.weekday() < 5 and market_open_time <= current_time <= market_close_time
