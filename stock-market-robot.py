@@ -16,9 +16,11 @@ api = tradeapi.REST(APIKEYID, APISECRETKEY, APIBASEURL)
 # List of stock symbols (excluding 'SH')
 stock_symbols = ['SPXL']
 
+
 def get_current_price(symbol):
     stock_data = yf.Ticker(symbol)
     return round(stock_data.history(period='1d')['Close'].iloc[-1], 4)
+
 
 def buy_stock_with_trailing_stop(symbol):
     try:
@@ -62,33 +64,38 @@ def buy_stock_with_trailing_stop(symbol):
     except Exception as e:
         print(f"Error: {str(e)}")
 
+
 def is_market_open():
     eastern_timezone = timezone('US/Eastern')
     current_time = datetime.now(eastern_timezone)
     market_open_time = datetime(current_time.year, current_time.month, current_time.day, 9, 30, 0, 0, eastern_timezone)
     market_close_time = datetime(current_time.year, current_time.month, current_time.day, 16, 0, 0, 0, eastern_timezone)
-    
+
     return current_time.weekday() < 5 and market_open_time <= current_time <= market_close_time
+
 
 def get_next_market_open_time():
     eastern_timezone = timezone('US/Eastern')
     current_time = datetime.now(eastern_timezone)
-    
+
     if current_time.weekday() == 4 and current_time.hour >= 16:
         # If today is Friday and after market close, add days until Monday
-        next_market_open_time = datetime(current_time.year, current_time.month, current_time.day, 9, 30, 0, 0, eastern_timezone) + timedelta(days=(7 - current_time.weekday()) % 7)
+        next_market_open_time = datetime(current_time.year, current_time.month, current_time.day, 9, 30, 0, 0,
+                                         eastern_timezone) + timedelta(days=(7 - current_time.weekday()) % 7)
     else:
         # Add days until the next market open
-        next_market_open_time = datetime(current_time.year, current_time.month, current_time.day, 9, 30, 0, 0, eastern_timezone) + timedelta(days=(7 - current_time.weekday()) % 7)
-    
+        next_market_open_time = datetime(current_time.year, current_time.month, current_time.day, 9, 30, 0, 0,
+                                         eastern_timezone) + timedelta(days=(7 - current_time.weekday()) % 7)
+
     return next_market_open_time
+
 
 # Execute the trading logic in a loop every 30 seconds
 while True:
     if is_market_open():
         for symbol in stock_symbols:
             current_price = get_current_price(symbol)
-            timestamp = datetime.now(eastern_timezone).strftime('%B %d, %Y %I:%M:%S %p')
+            timestamp = datetime.now(timezone('US/Eastern')).strftime('%B %d, %Y %I:%M:%S %p')
             print(f"Current price of {symbol}: ${current_price:.4f}, Timestamp: {timestamp}")
             buy_stock_with_trailing_stop(symbol)
     else:
